@@ -32,7 +32,6 @@ pub enum TaxBitRecType {
     Unknown,
 }
 
-//#[derive(Debug, Deserialize, Serialize, Clone, Ord, Eq, PartialEq, PartialOrd)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 // CSV Header
 //   Date and Time, Transaction Type, Sent Quantity, Sent Currency, Sending Source,
@@ -220,6 +219,15 @@ impl PartialOrd for TaxBitRec {
     }
 }
 
+impl Ord for TaxBitRec {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.partial_cmp(other) {
+            Some(ord) => ord,
+            None => panic!("SNH"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
 
@@ -367,6 +375,25 @@ mod test {
         tbr.time = 0;
         tbr_other.time = 1;
         assert!(tbr < tbr_other);
+    }
+
+    #[test]
+    fn test_ord() {
+        let tbr = TaxBitRec::default();
+        let tbr_other = TaxBitRec::default();
+        assert_eq!(tbr.cmp(&tbr_other), core::cmp::Ordering::Equal);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_ord_panic() {
+        let mut tbr = TaxBitRec::default();
+        let mut tbr_other = TaxBitRec::default();
+
+        // Panic when a field is None and the same field in other is Some
+        tbr.received_quantity = None;
+        tbr_other.received_quantity = Some(dec!(1));
+        assert_eq!(tbr.cmp(&tbr_other), core::cmp::Ordering::Equal);
     }
 
     #[test]
