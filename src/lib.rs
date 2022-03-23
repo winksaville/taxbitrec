@@ -2,7 +2,6 @@ use std::fmt::Display;
 
 use dec_utils::dec_to_string_or_empty;
 use rust_decimal::prelude::*;
-//use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
 use serde_utc_time_ms::{de_string_to_utc_time_ms, se_time_ms_to_utc_z_string};
 use time_ms_conversions::time_ms_to_utc_string;
@@ -142,7 +141,6 @@ impl Eq for TaxBitRec {}
 
 impl PartialEq for TaxBitRec {
     fn eq(&self, other: &Self) -> bool {
-        println!("eq");
         self.time == other.time
             && self.exchange_transaction_id == other.exchange_transaction_id
             && self.blockchain_transaction_hash == other.blockchain_transaction_hash
@@ -160,7 +158,6 @@ impl PartialEq for TaxBitRec {
 
 impl PartialOrd for TaxBitRec {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        println!("partial_cmp");
         match self.time.partial_cmp(&other.time) {
             Some(core::cmp::Ordering::Equal) => {}
             ord => return ord,
@@ -242,6 +239,7 @@ mod test {
     #[test]
     fn test_new() {
         let tbr = TaxBitRec::new();
+        assert_eq!(tbr.time, 0);
         assert_eq!(tbr.type_txs, TaxBitRecType::Unknown);
         assert_eq!(tbr.sent_quantity, None);
         assert_eq!(tbr.sent_currency, "".to_owned());
@@ -444,5 +442,71 @@ mod test {
         tbr.type_txs = TaxBitRecType::Trade;
         tbr.received_currency = "ABC".to_owned();
         assert_eq!(tbr.get_asset(), "ABC");
+    }
+
+    #[test]
+    fn test_deserialize_from_csv() {
+        let csv = r#"
+Date and Time,Transaction Type,Sent Quantity,Sent Currency,Sending Source,Received Quantity,Received Currency,Receiving Destination,Fee,Fee Currency,Exchange Transaction ID,Blockchain Transaction Hash
+2020-03-02T07:32:05.000+00:00,Income,,,,0.0000003,BTC,BinanceUS,,,,
+2020-03-02T07:32:34.000Z,Income,,,,0.0054,XRP,BinanceUS,,,,
+2020-03-02T23:13:57.000Z,Income,,,,0.10556,USD,BinanceUS,,,,
+"#;
+
+        let mut tbr_a: Vec<TaxBitRec> = vec![];
+        let rdr = csv.as_bytes();
+        let mut reader = csv::Reader::from_reader(rdr);
+        for entry in reader.deserialize() {
+            let rec: TaxBitRec = entry.unwrap();
+            println!("{rec}");
+            tbr_a.push(rec);
+        }
+
+        let tbr_a_expected: Vec<TaxBitRec> = vec![
+            TaxBitRec {
+                time: 1583134325000,
+                type_txs: TaxBitRecType::Income,
+                sent_quantity: None,
+                sent_currency: "".to_owned(),
+                sending_source: "".to_owned(),
+                received_quantity: Some(dec!(0.0000003)),
+                received_currency: "BTC".to_owned(),
+                receiving_destination: "BinanceUS".to_owned(),
+                fee_quantity: None,
+                fee_currency: "".to_owned(),
+                exchange_transaction_id: "".to_owned(),
+                blockchain_transaction_hash: "".to_owned(),
+            },
+            TaxBitRec {
+                time: 1583134354000,
+                type_txs: TaxBitRecType::Income,
+                sent_quantity: None,
+                sent_currency: "".to_owned(),
+                sending_source: "".to_owned(),
+                received_quantity: Some(dec!(0.0054)),
+                received_currency: "XRP".to_owned(),
+                receiving_destination: "BinanceUS".to_owned(),
+                fee_quantity: None,
+                fee_currency: "".to_owned(),
+                exchange_transaction_id: "".to_owned(),
+                blockchain_transaction_hash: "".to_owned(),
+            },
+            TaxBitRec {
+                time: 1583190837000,
+                type_txs: TaxBitRecType::Income,
+                sent_quantity: None,
+                sent_currency: "".to_owned(),
+                sending_source: "".to_owned(),
+                received_quantity: Some(dec!(0.10556)),
+                received_currency: "USD".to_owned(),
+                receiving_destination: "BinanceUS".to_owned(),
+                fee_quantity: None,
+                fee_currency: "".to_owned(),
+                exchange_transaction_id: "".to_owned(),
+                blockchain_transaction_hash: "".to_owned(),
+            },
+        ];
+        //println!("{:#?}", tbr_a);
+        assert_eq!(tbr_a, tbr_a_expected);
     }
 }
