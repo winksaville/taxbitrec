@@ -1,4 +1,4 @@
-# TaxBitrecRec
+# TaxBitRec
 
 ![ci-stable](https://github.com/winksaville/taxbitrec/actions/workflows/ci-stable.yml/badge.svg)
 ![ci-nightly](https://github.com/winksaville/taxbitrec/actions/workflows/ci-nightly.yml/badge.svg)
