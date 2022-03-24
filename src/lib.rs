@@ -159,56 +159,56 @@ impl PartialEq for TaxBitRec {
 impl PartialOrd for TaxBitRec {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         match self.time.partial_cmp(&other.time) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self
             .exchange_transaction_id
             .partial_cmp(&other.exchange_transaction_id)
         {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self
             .blockchain_transaction_hash
             .partial_cmp(&other.blockchain_transaction_hash)
         {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self.type_txs.partial_cmp(&other.type_txs) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self.received_currency.partial_cmp(&other.received_currency) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self.sent_currency.partial_cmp(&other.sent_currency) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self.fee_currency.partial_cmp(&other.fee_currency) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self
             .receiving_destination
             .partial_cmp(&other.receiving_destination)
         {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self.sending_source.partial_cmp(&other.sending_source) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self.received_quantity.partial_cmp(&other.received_quantity) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
         match self.sent_quantity.partial_cmp(&other.sent_quantity) {
-            Some(core::cmp::Ordering::Equal) => {}
+            Some(std::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
 
@@ -379,7 +379,7 @@ mod test {
     fn test_ord() {
         let tbr = TaxBitRec::default();
         let tbr_other = TaxBitRec::default();
-        assert_eq!(tbr.cmp(&tbr_other), core::cmp::Ordering::Equal);
+        assert_eq!(tbr.cmp(&tbr_other), std::cmp::Ordering::Equal);
     }
 
     #[test]
@@ -391,7 +391,7 @@ mod test {
         // Panic when a field is None and the same field in other is Some
         tbr.received_quantity = None;
         tbr_other.received_quantity = Some(dec!(1));
-        assert_eq!(tbr.cmp(&tbr_other), core::cmp::Ordering::Equal);
+        assert_eq!(tbr.cmp(&tbr_other), std::cmp::Ordering::Equal);
     }
 
     #[test]
